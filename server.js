@@ -1,7 +1,9 @@
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv").config();
-
+const connectDb = require("./config/dbConnection");
+//to establish database connection I have called connectDb function
+connectDb();
 const app = express();
 //procee.env.variable is way to access variables from .env
 const port = process.env.PORT || 8000;
