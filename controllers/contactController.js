@@ -12,8 +12,6 @@ const getContacts = asyncHandler(async function (request, response) {
 //@route POST /api/contacts
 //@access public
 const createContact = asyncHandler(async function (request, response) {
-  //while using json you cant use writehead or response.end you have to use status
-
   const { name, email, phone } = request.body;
   if (!name || !email || !phone) {
     response.status(400);
@@ -34,28 +32,41 @@ const fetchContact = asyncHandler(async function (request, response) {
   const getContact = await Contact.findById(request.params.id);
   if (!getContact) {
     response.status(404);
+    throw new Error("Contact Not Found");
   }
   //while using json you cant use writehead or reaponse.end you have to use status
   response.status(200).json(getContact);
-  throw new Error("Contact Not Found");
 });
 //@description Update Contact based on :id
 //@route PUT /api/contacts/:id
 //@access public
 const updateContact = asyncHandler(async (request, response) => {
+  //To specifically finding contact by id
+  const getContact = await Contact.findById(request.params.id);
+  if (!getContact) {
+    response.status(404);
+    throw new Error("Contact Not Found");
+  }
+  const updatedContact = await Contact.findByIdAndUpdate(
+    request.params.id,
+    request.body,
+    { new: true }
+  );
+
   //while using json you cant use writehead or reaponse.end you have to use status
-  response
-    .status(200)
-    .json({ message: `Update Contact for ${request.params.id}` });
+  response.status(200).json(updatedContact);
 });
 //@description Delete Contact based on :id
 //@route DELETE /api/contacts/:id
 //@access public
 const deleteContact = asyncHandler(async (request, response) => {
-  //while using json you cant use writehead or reaponse.end you have to use status
-  response
-    .status(200)
-    .json({ message: `Delete Contact for ${request.params.id}` });
+  const contact = await Contact.findById(request.params.id);
+  if (!contact) {
+    response.status(404);
+    throw new Error("Contact Not Found");
+  }
+  await Contact.deleteOne();
+  response.status(200).json(contact);
 });
 module.exports = {
   getContacts,
