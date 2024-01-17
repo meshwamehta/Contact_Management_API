@@ -41,17 +41,20 @@ const userLogin = asyncHandler(async (request, response) => {
     throw new Error("All Fields Are Mendatory");
   }
   const user = await User.findOne({ email });
+  //if user and password matches server will create an access token for client
   if (user && (await bcrypt.compare(password, user.password))) {
     const accessToken = jwt.sign(
       {
+        //payload
         user: {
           username: user.username,
           email: user.email,
           id: user.id,
         },
       },
+      //token secret to sign in ad keep it secure
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "15m" }
     );
     response.status(200).json({ accessToken });
   } else {
@@ -64,7 +67,8 @@ const userLogin = asyncHandler(async (request, response) => {
 //@route Get /api/users/current
 //@access private
 const currentUser = asyncHandler(async (request, response) => {
-  response.json({ message: "Register the user" });
+  //req.user is imported from validateTokenHandler file
+  response.json(request.user);
 });
 
 module.exports = { registerUser, userLogin, currentUser };

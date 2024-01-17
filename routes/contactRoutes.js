@@ -8,7 +8,10 @@ const {
   updateContact,
   deleteContact,
 } = require("../controllers/contactController");
+const validateToken = require("../middleware/validateTokenHandler");
 
+//to make all contact routes private instead of using it sepreatly for each routes
+router.use(validateToken);
 //'/api/contacts' is common for every route I replace it with '/'
 //router.route("/").get(getContacts);
 //router.route("/").post(createContact);
